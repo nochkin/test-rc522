@@ -5,8 +5,8 @@ RM = rm
 
 OBJDIR = .obj
 
-SRC = bcm2835.c main.c
-INC = bcm2835.h
+SRC = bcm2835.c main.c rc522.c rfid.c
+INC = bcm2835.h rc522.h rfid.h
 OBJ = $(patsubst %,$(OBJDIR)/%,$(SRC:.c=.o))
 BINARY = rc522-mpc
 
@@ -24,7 +24,7 @@ $(OBJDIR)/%.o: %.c $(INC)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(BINARY): $(OBJ)
-	$(CC) -lsqlite3 $(CFLAGS) $(BINARY) $^
+	$(CC) -lsqlite3 $(CFLAGS) -o $(BINARY) $^
 
 clean:
 	$(RM) -rf $(OBJDIR)
