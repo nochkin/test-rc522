@@ -2,11 +2,12 @@ CC = clang
 CFLAGS = -O0 -g -Wall
 MKDIR = mkdir
 RM = rm
+FIND = find
 
 OBJDIR = .obj
 
-SRC = bcm2835.c main.c rc522.c rfid.c
-INC = bcm2835.h rc522.h rfid.h
+SRC = bcm2835.c main.c rc522.c rfid.c db.c
+INC = bcm2835.h rc522.h rfid.h db.h
 OBJ = $(patsubst %,$(OBJDIR)/%,$(SRC:.c=.o))
 BINARY = rc522-mpc
 
@@ -27,5 +28,6 @@ $(BINARY): $(OBJ)
 	$(CC) -lsqlite3 $(CFLAGS) -o $(BINARY) $^
 
 clean:
-	$(RM) -rf $(OBJDIR)
+	$(FIND) $(OBJDIR) -type f -rm {} \;
+	$(RM) -rf $(BINARY)
 

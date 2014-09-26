@@ -1,9 +1,11 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <syslog.h>
+#include <sqlite3.h>
 
 #include "bcm2835.h"
 #include "rfid.h"
+#include "db.h"
 
 uint8_t HW_init(uint32_t spi_speed, uint8_t gpio) {
 	uint16_t sp;
@@ -39,8 +41,17 @@ int main(int argc, char *argv[])
 	char *p;
 	char sn_str[23];
 
+	sqlite3 *db;
+
 	uint32_t spi_speed=10000000L;
 	uint8_t gpio=255;
+
+	status = mydb_open(&db);
+	if (status)
+	{
+		fprintf(stderr, "DB: error opening: %s\n", sqlite3_errmsg(db));
+		return 2;
+	}
 
 	if (HW_init(spi_speed,gpio)) return 1;
 	setuid(uid);
@@ -63,6 +74,8 @@ int main(int argc, char *argv[])
 			p+=2;
 		}
 	}
+
+	status = mydb_close(db);
 
 	return 0;
 }
