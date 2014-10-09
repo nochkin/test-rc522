@@ -1,10 +1,9 @@
-
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
+
 #include "bcm2835.h"
 #include "rc522.h"
-#include "main.h"
 
 void InitRc522(void)
 {

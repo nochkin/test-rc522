@@ -10,10 +10,10 @@ FIND = find
 
 OBJDIR = .obj
 
-SRC = bcm2835.c main.c rc522.c rfid.c db.c
-SRCXX =
-INC = bcm2835.h rc522.h rfid.h db.h
-INCXX =
+SRC = bcm2835.c rc522.c rfid.c
+SRCXX = main.cpp db.cpp
+INC = bcm2835.h rc522.h rfid.h
+INCXX = db.h
 OBJ = $(patsubst %,$(OBJDIR)/%,$(SRC:.c=.c.o))
 OBJXX = $(patsubst %,$(OBJDIR)/%,$(SRCXX:.cpp=.cpp.o))
 BINARY = rc522-mpc

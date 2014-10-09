@@ -1,9 +1,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <syslog.h>
-#include <sqlite3.h>
 
 #include "bcm2835.h"
+#include "rc522.h"
 #include "rfid.h"
 #include "db.h"
 
@@ -41,15 +41,14 @@ int main(int argc, char *argv[])
 	char *p;
 	char sn_str[23];
 
-	sqlite3 *db;
-
 	uint32_t spi_speed=10000000L;
 	uint8_t gpio=255;
 
-	status = mydb_open(&db);
+	DB mydb;
+	status = mydb.open();
 	if (status)
 	{
-		fprintf(stderr, "DB: error opening: %s\n", sqlite3_errmsg(db));
+		fprintf(stderr, "DB: error opening: %s\n", mydb.get_error().c_str());
 		return 2;
 	}
 
@@ -75,7 +74,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	status = mydb_close(db);
+	status = mydb.close();
 
 	return 0;
 }

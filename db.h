@@ -1,5 +1,23 @@
+#ifndef _DB_H
+#define _DB_H
+
+#include <string>
 #include <sqlite3.h>
+#include <stdio.h>
 
-int mydb_open(sqlite3 **db);
-int mydb_close(sqlite3 *db);
+class DB
+{
+	public:
+		DB();
+		DB(std::string db_filename);
+		int open();
+		int close();
+		std::string get_error();
+	private:
+		std::string db_filename;
+		sqlite3 *db;
 
+		int create();
+};
+
+#endif
