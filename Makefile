@@ -1,19 +1,19 @@
 CC = clang
 CXX = clang++
-CFLAGS_DEBUG = -O0 -g -Wall -I.
-CFLAGS_OPT = -O3 -Wall -I. -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
+CFLAGS_DEBUG = -O0 -g -Wall -I. -I/usr/local/include
+CFLAGS_OPT = -O3 -Wall -I. -I/usr/local/include # -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
 LINK = clang++
-LDFLAGS = -lsqlite3
+LDFLAGS = -L/usr/local/lib -lsqlite3
 MKDIR = mkdir
 RM = rm
 FIND = find
 
 OBJDIR = .obj
 
-SRC = bcm2835.c rfid.c rc522.c
-SRCXX = main.cpp db.cpp reader.cpp
-INC = bcm2835.h rfid.h rc522.h
-INCXX = db.h reader.h
+SRC = bcm2835.c
+SRCXX = main.cpp db.cpp reader2.cpp
+INC = bcm2835.h
+INCXX = db.h reader2.h
 OBJ = $(patsubst %,$(OBJDIR)/%,$(SRC:.c=.c.o))
 OBJXX = $(patsubst %,$(OBJDIR)/%,$(SRCXX:.cpp=.cpp.o))
 BINARY = rc522-mpc

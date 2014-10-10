@@ -2,11 +2,8 @@
 #include <stdio.h>
 #include <syslog.h>
 
-#include "bcm2835.h"
-#include "rc522.h"
-#include "rfid.h"
 #include "db.h"
-#include "reader.h"
+#include "reader2.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,8 +19,8 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
-	Reader reader;
-	err = reader.init();
+	Reader2 reader;
+	err = reader.init_spi();
 	if (err == 1) {
 		syslog(LOG_DAEMON|LOG_ERR,"Failed init bcm2835\n");
 		return 1;

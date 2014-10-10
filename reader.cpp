@@ -1,4 +1,6 @@
 #include "reader.h"
+#include "rc522.c"
+#include "rfid.c"
 
 Reader::Reader() {
 }
