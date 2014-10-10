@@ -22,17 +22,17 @@ int Reader2::init_spi(int8_t RST)
 		_if_type = IF_SPI;
 		return init();
 	} else {
-		return -1;
+		return 1;
 	}
 }
 
 int Reader2::init_i2c()
 {
 	_if_type = IF_I2C;
-	return -1;
+	return 1;
 }
 
-int Reader2::read_card()
+int Reader2::read_tag()
 {
 	uint8_t tag_type[MAX_RLEN];
 	uint8_t status = request(PICC_REQIDL, tag_type);
@@ -40,7 +40,7 @@ int Reader2::read_card()
 	if (status == TAG_OK) {
 		//status = anticoll();
 	}
-	return 0;
+	return status;
 }
 
 int Reader2::init()

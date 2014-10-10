@@ -107,7 +107,7 @@ class Reader2
 		Reader2();
 		int init_spi(int8_t RST = RC522_SPI_RESET);
 		int init_i2c();
-		int read_card();
+		int read_tag();
 	private:
 		interface_t _if_type;
 

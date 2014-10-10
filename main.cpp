@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
 	Reader2 reader;
 	err = reader.init_spi();
 	if (err == 1) {
+		fprintf(stderr, "Failed init bcm2835\n");
 		syslog(LOG_DAEMON|LOG_ERR,"Failed init bcm2835\n");
 		return 1;
 	}
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
 
 	while(1)
 	{
+		reader.read_tag();
 		usleep(200000);
 	}
 

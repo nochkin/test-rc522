@@ -24,7 +24,7 @@ int DB::open()
 	int rc;
 
 	rc = sqlite3_open(db_filename.c_str(), &db);
-	if (rc) return rc;
+	if (rc == 0) return rc;
 
 	return create();
 }
