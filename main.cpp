@@ -30,8 +30,12 @@ int main(int argc, char *argv[])
 
 	while(1)
 	{
-		reader.read_tag();
-		usleep(200000);
+		status = reader.read_tag();
+		if (status == TAG_OK) {
+			printf("tag(%i): %s\n", status, reader.get_tag_str().c_str());
+		}
+		reader.halt();
+		usleep(300000);
 	}
 
 	status = mydb.close();

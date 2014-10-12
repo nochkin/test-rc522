@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <string.h>
+#include <string>
 
 #include "bcm2835.h"
 
@@ -109,14 +110,19 @@ class Reader2
 		int init_spi(int8_t RST = RC522_SPI_RESET);
 		int init_i2c();
 		int read_tag();
+		uint8_t halt();
+		uint8_t *get_tag();
+		std::string get_tag_str(std::string delim="-");
 	private:
 		interface_t _if_type;
+		uint8_t tag_full_sn[7];
 
 		int init();
 		interface_t get_interface();
 		uint8_t request(uint8_t req_mode, uint8_t *tag_type);
 		uint8_t anticoll(uint8_t *);
 		uint8_t select_sn(uint8_t *sn);
+		void calculate_crc(uint8_t *data, uint8_t data_len, uint8_t *buf);
 		uint8_t send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, uint8_t *buf, uint8_t *buf_len);
 		void antenna(bool on);
 		void write(uint8_t addr, uint8_t data);
