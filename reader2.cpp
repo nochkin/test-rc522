@@ -10,15 +10,14 @@ int Reader2::init_spi(int8_t RST)
 {
 	if (bcm2835_init()) {
 		bcm2835_spi_begin();
-		// bcm2835_spi_chipSelect(cs);
+		bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
+		bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
 		bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
 		bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
 		// 16 MHz SPI bus, but Worked at 62 MHz also
-		bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_16);
-		// Set the pin that will control DC as output
-		// bcm2835_gpio_fsel(dc, BCM2835_GPIO_FSEL_OUTP);
+		bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32);
 		// Setup reset pin direction as output
-		bcm2835_gpio_fsel(RST, BCM2835_GPIO_FSEL_OUTP);
+		// bcm2835_gpio_fsel(RST, BCM2835_GPIO_FSEL_OUTP);
 		_if_type = IF_SPI;
 		return init();
 	} else {
@@ -35,11 +34,25 @@ int Reader2::init_i2c()
 int Reader2::read_tag()
 {
 	uint8_t tag_type[MAX_RLEN];
+	uint8_t sn[10];
+	uint8_t full_sn[16];
+
+	memset(full_sn, 0, 16);
+
 	uint8_t status = request(PICC_REQIDL, tag_type);
+	memcpy(full_sn, tag_type, 2);
 	write(BitFramingReg, 0x07);
 	if (status == TAG_OK) {
-		//status = anticoll();
+		status = anticoll(sn);
+		memcpy(full_sn+2, sn, 5);
+		// status = select_sn(sn);
+		// memcpy(full_sn+2+5, sn, 1);
 	}
+	printf("full sn: ");
+	for (int ii=0; ii<7; ii++) {
+		printf("%02X:", full_sn[ii]);
+	}
+	printf("\n");
 	return status;
 }
 
@@ -69,7 +82,66 @@ uint8_t Reader2::request(uint8_t req_mode, uint8_t *tag_type)
 	uint8_t buf_len = 0;
 
 	write(BitFramingReg, 0x07);
-	status = send_to_card(PCD_TRANSCEIVE, tag_type, 1, buf, &buf_len);
+	buf[0] = req_mode;
+	status = send_to_card(PCD_TRANSCEIVE, buf, 1, buf, &buf_len);
+	if (buf_len > 1) {
+		tag_type[0] = buf[0];
+		tag_type[1] = buf[1];
+	}
+
+	return status;
+}
+
+uint8_t Reader2::anticoll(uint8_t *sn)
+{
+	uint8_t status;
+	uint8_t sn_check = 0;
+	uint8_t sn_len = 0;
+	uint8_t ii;
+
+	write(BitFramingReg, 0x00);
+	sn[0] = PICC_ANTICOLL1;
+	sn[1] = 0x20;
+	status = send_to_card(PCD_TRANSCEIVE, sn, 2, sn, &sn_len);
+
+	if (status == TAG_OK) {
+		for (ii=0; ii<4; ii++) {
+			sn_check ^= sn[ii];
+		}
+		if (sn_check != sn[ii]) {
+			status = TAG_ERROR;
+		}
+	}
+
+	return status;
+}
+
+uint8_t Reader2::select_sn(uint8_t *sn)
+{
+	uint8_t status;
+	uint8_t buf[MAX_RLEN];
+	uint8_t buf_len = 0;
+
+	buf[0] = PICC_ANTICOLL1;
+	buf[1] = 0x70;
+	buf[6] = 0;
+	for (int ii=0; ii<4; ii++) {
+		buf[ii+2] = *(sn+ii);
+		buf[6] ^= *(sn+ii);
+	}
+
+	// clear_bitmask(Status2Reg, 0x08);
+
+	status = send_to_card(PCD_TRANSCEIVE, buf, 9, buf, &buf_len);
+	printf("buf(%i): ", buf_len);
+	for (int ii=0; ii<buf_len; ii++) {
+		printf("%02X:", buf[ii]);
+	}
+	printf("\n");
+	if (buf_len != 0x18) {
+		status = TAG_ERROR;
+	}
+
 	return status;
 }
 
@@ -98,6 +170,7 @@ uint8_t Reader2::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, 
 	write(CommandReg, PCD_IDLE);
 
 	// Write to FIFO
+	// printf("%i bytes to fifo\n", data_len);
 	for (ii = 0; ii < data_len; ii++) {
 		write(FIFODataReg, data[ii]);
 	}
@@ -118,6 +191,7 @@ uint8_t Reader2::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, 
 
 	clear_bitmask(BitFramingReg, 0x80);
 
+	// printf("ii: %i\n", ii);
 	if (ii > 0) {
 		if (!(read(ErrorReg) & 0x1b)) {
 			status = TAG_OK;
@@ -164,7 +238,7 @@ void Reader2::antenna(bool on)
 void Reader2::write(uint8_t addr, uint8_t data)
 {
 	char buf[2];
-	buf[0] = addr & 0x7f;
+	buf[0] = (addr << 1) & 0x7f;
 	buf[1] = data;
 
 	switch (get_interface()) {
@@ -181,7 +255,7 @@ void Reader2::write(uint8_t addr, uint8_t data)
 uint8_t Reader2::read(uint8_t addr)
 {
 	char buf[2];
-	buf[0] = addr | (1<<7);
+	buf[0] = ((addr << 1) & 0x7e) | 0x80;
 	buf[1] = 0;
 
 	switch (get_interface()) {

@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <string.h>
 
 #include "bcm2835.h"
 
@@ -115,6 +116,7 @@ class Reader2
 		interface_t get_interface();
 		uint8_t request(uint8_t req_mode, uint8_t *tag_type);
 		uint8_t anticoll(uint8_t *);
+		uint8_t select_sn(uint8_t *sn);
 		uint8_t send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, uint8_t *buf, uint8_t *buf_len);
 		void antenna(bool on);
 		void write(uint8_t addr, uint8_t data);
