@@ -42,12 +42,31 @@ std::string DB::get_error()
 
 int DB::create()
 {
-	std::string sql;
+	std::string sql = DB_CREATE_TAGS;
 	char *err_msg = 0;
 	int rc;
 
-	sql = "create table rfid_tags(id text primary key not null, timestamp int not null)";
 	rc = sqlite3_exec(db, sql.c_str(), mydb_callback, 0, &err_msg);
+
+	return rc;
+}
+
+int DB::add_new(std::string tag)
+{
+	int rc;
+	sqlite3_stmt *stmt;
+	const char *pz;
+	std::string sql = DB_INSERT_TAG;
+
+	rc = sqlite3_prepare(db, sql.c_str(), sql.size(), &stmt, &pz);
+	if (rc == SQLITE_OK) {
+		unsigned long timestamp = time(NULL);
+		const char *tag_c = tag.c_str();
+		sqlite3_bind_text(stmt, 1, tag_c, strlen(tag_c), 0);
+		sqlite3_bind_int(stmt, 2, timestamp);
+		sqlite3_step(stmt);
+		sqlite3_finalize(stmt);
+	}
 
 	return rc;
 }
