@@ -44,11 +44,6 @@ std::string DB::get_error()
 	return err_msg;
 }
 
-void DB::showDB()
-{
-	printf("mydb: %li\n", this->mydb);
-}
-
 int DB::create()
 {
 	char *err_msg = 0;
@@ -56,24 +51,36 @@ int DB::create()
 
 	rc = sqlite3_exec(this->mydb, DB_CREATE_TAGS, mydb_callback, 0, &err_msg);
 
-	showDB();
 	return rc;
 }
 
 int DB::add_new(std::string tag)
 {
-	showDB();
 	int rc;
 	static char const *args_s[] = {
-		tag.c_str(),
-		""
+		"",
+		tag.c_str()
 	};
-	unsigned long *args_i[] = {
-		NULL,
-		(unsigned long*)time(NULL)
+	unsigned long args_i[] = {
+		(unsigned long)time(NULL),
+		0
+	};
+	uint8_t args[] = {
+		SQLITE_INTEGER,
+		SQLITE_TEXT
 	};
 
-	rc = run_sql(DB_INSERT_TAG, args_i, args_s, 2);
+	rc = run_sql(DB_INSERT_TAG, args_i, args_s, args, 2);
+	if (rc == SQLITE_OK) {
+		rc = run_sql(DB_UPDATE_TIME, args_i, args_s, args, 2);
+		if (rc == SQLITE_OK) {
+			printf("time updated\n");
+		} else {
+			printf("update_time: %s\n", get_error().c_str());
+		}
+	} else {
+		printf("insert_tag: %s\n", get_error().c_str());
+	}
 
 	/*
 	sqlite3_stmt *stmt;
@@ -94,25 +101,29 @@ int DB::add_new(std::string tag)
 	return rc;
 }
 
-int DB::run_sql(std::string sql, unsigned long *args_i[], const char *args_s[], uint8_t args)
+int DB::run_sql(std::string sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn)
 {
 	int rc;
 	sqlite3_stmt *stmt;
 
 	rc = sqlite3_prepare_v2(this->mydb, sql.c_str(), strlen(sql.c_str()), &stmt, NULL);
-	printf("prepare: %s\n", get_error().c_str());
 	if (rc == SQLITE_OK) {
-		for (uint8_t ii=0; ii<args; ii++) {
-			if (args_i[ii] != NULL) {
-				sqlite3_bind_text(stmt, ii+1, args_s[ii], strlen(args_s[ii]), 0);
-			} else {
-				sqlite3_bind_int(stmt, ii+1, *args_i[ii]);
+		for (uint8_t ii=0; ii<argn; ii++) {
+			switch (args[ii]) {
+				case SQLITE_TEXT:
+					sqlite3_bind_text(stmt, ii+1, args_s[ii], strlen(args_s[ii]), 0);
+					break;
+				case SQLITE_INTEGER:
+					sqlite3_bind_int(stmt, ii+1, args_i[ii]);
+					break;
 			}
 		}
-		sqlite3_step(stmt);
-		printf("step: %s\n", get_error().c_str());
-		sqlite3_finalize(stmt);
-		printf("finalize: %s\n", get_error().c_str());
+		rc = sqlite3_step(stmt);
+		// printf("step(%i): %s\n", rc, get_error().c_str());
+		if (rc == SQLITE_DONE) {
+			rc = sqlite3_finalize(stmt);
+			// printf("finalize(%i): %s\n", rc, get_error().c_str());
+		}
 	}
 
 	return rc;
