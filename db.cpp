@@ -82,23 +82,28 @@ int DB::add_new(std::string tag)
 		printf("insert_tag: %s\n", get_error().c_str());
 	}
 
-	/*
-	sqlite3_stmt *stmt;
-	const char *pz;
-	std::string sql = DB_INSERT_TAG;
-
-	rc = sqlite3_prepare(db, sql.c_str(), sql.size(), &stmt, &pz);
-	if (rc == SQLITE_OK) {
-		unsigned long timestamp = time(NULL);
-		const char *tag_c = tag.c_str();
-		sqlite3_bind_text(stmt, 1, tag_c, strlen(tag_c), 0);
-		sqlite3_bind_int(stmt, 2, timestamp);
-		sqlite3_step(stmt);
-		sqlite3_finalize(stmt);
-	}
-	*/
-
 	return rc;
+}
+
+std::string DB::get_playfile(std::string tag)
+{
+	int rc;
+
+	static char const *args_s[] = {
+		tag.c_str()
+	};
+	unsigned long args_i[] = {
+		0
+	};
+	uint8_t args[] = {
+		SQLITE_TEXT
+	};
+
+	rc = run_sql(DB_SELECT_FILE, args_i, args_s, args, 1);
+	if (rc == SQLITE_OK) {
+	}
+
+	return "";
 }
 
 int DB::run_sql(std::string sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn)
@@ -118,12 +123,17 @@ int DB::run_sql(std::string sql, unsigned long args_i[], const char *args_s[], u
 					break;
 			}
 		}
-		rc = sqlite3_step(stmt);
-		// printf("step(%i): %s\n", rc, get_error().c_str());
-		if (rc == SQLITE_DONE) {
-			rc = sqlite3_finalize(stmt);
-			// printf("finalize(%i): %s\n", rc, get_error().c_str());
+		while (1) {
+			rc = sqlite3_step(stmt);
+			// printf("step(%i): %s\n", rc, get_error().c_str());
+			if (rc == SQLITE_DONE) break;
+			if (rc == SQLITE_ROW) {
+				std::string column_text(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)));
+				printf("column: %s\n", column_text.c_str());
+			}
 		}
+		rc = sqlite3_finalize(stmt);
+		// printf("finalize(%i): %s\n", rc, get_error().c_str());
 	}
 
 	return rc;

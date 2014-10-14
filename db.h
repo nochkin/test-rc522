@@ -12,6 +12,7 @@
 #define DB_INSERT_TAG	"insert or ignore into rfid_tags (mytime,tag) values (?,?)"
 #define DB_UPDATE_TIME	"update rfid_tags set mytime=? where tag=?"
 #define DB_UPDATE_FILE	"update rfid_tags set playfile=? where tag=?"
+#define DB_SELECT_FILE	"select playfile from rfid_tags where tag=?"
 
 class DB
 {
@@ -22,6 +23,7 @@ class DB
 		int close();
 		std::string get_error();
 		int add_new(std::string tag);
+		std::string get_playfile(std::string tag);
 	private:
 		sqlite3 *mydb;
 		std::string my_filename;
