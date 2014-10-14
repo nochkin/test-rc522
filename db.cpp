@@ -11,13 +11,13 @@ static int mydb_callback(void *NotUsed, int argc, char **argv, char **azColName)
 
 DB::DB()
 {
-	db_filename = "/tmp/rc522.db";
+	my_filename = "/tmp/rc522.db";
 	this->mydb = NULL;
 }
 
 DB::DB(std::string db_filename)
 {
-	db_filename = db_filename;
+	this->my_filename = db_filename;
 	this->mydb = NULL;
 }
 
@@ -25,7 +25,7 @@ int DB::open()
 {
 	int rc;
 
-	rc = sqlite3_open_v2(db_filename.c_str(), &this->mydb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+	rc = sqlite3_open_v2(my_filename.c_str(), &this->mydb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 	printf("mydb: %li\n", this->mydb);
 	if (rc == SQLITE_OK) {
 		return create();

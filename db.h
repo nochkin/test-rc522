@@ -24,7 +24,7 @@ class DB
 		int add_new(std::string tag);
 	private:
 		sqlite3 *mydb;
-		std::string db_filename;
+		std::string my_filename;
 
 		int create();
 		int run_sql(std::string sql, unsigned long *args_i[], const char *args_s[], uint8_t args);
