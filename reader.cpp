@@ -4,6 +4,7 @@
 
 Reader::Reader()
 {
+	_if_type = IF_NOT_SET;
 	memset(tag_full_sn, 0, 7);
 }
 

@@ -26,7 +26,6 @@ int DB::open()
 	int rc;
 
 	rc = sqlite3_open_v2(my_filename.c_str(), &this->mydb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-	printf("mydb: %li\n", this->mydb);
 	if (rc == SQLITE_OK) {
 		return create();
 	}
@@ -45,6 +44,11 @@ std::string DB::get_error()
 	return err_msg;
 }
 
+void DB::showDB()
+{
+	printf("mydb: %li\n", this->mydb);
+}
+
 int DB::create()
 {
 	char *err_msg = 0;
@@ -52,12 +56,13 @@ int DB::create()
 
 	rc = sqlite3_exec(this->mydb, DB_CREATE_TAGS, mydb_callback, 0, &err_msg);
 
+	showDB();
 	return rc;
 }
 
 int DB::add_new(std::string tag)
 {
-	printf("mydb: %li\n", this->mydb);
+	showDB();
 	int rc;
 	static char const *args_s[] = {
 		tag.c_str(),
@@ -94,7 +99,6 @@ int DB::run_sql(std::string sql, unsigned long *args_i[], const char *args_s[], 
 	int rc;
 	sqlite3_stmt *stmt;
 
-	printf("mydb: %li\n", this->mydb);
 	rc = sqlite3_prepare_v2(this->mydb, sql.c_str(), strlen(sql.c_str()), &stmt, NULL);
 	printf("prepare: %s\n", get_error().c_str());
 	if (rc == SQLITE_OK) {

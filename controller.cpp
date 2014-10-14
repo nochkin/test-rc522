@@ -4,11 +4,11 @@ Controller::Controller() {
 }
 
 int Controller::setup_db() {
-	return db.open();
+	return this->tagdb.open();
 }
 
 int Controller::setup_reader() {
-	return reader.init_spi();
+	return this->rfreader.init_spi();
 }
 
 void Controller::main_loop() {
@@ -16,22 +16,22 @@ void Controller::main_loop() {
 
 	while(1)
 	{
-		status = reader.read_tag();
+		status = this->rfreader.read_tag();
 		if (status == TAG_OK) {
-			std::string mytag = reader.get_tag_str();
+			std::string mytag = this->rfreader.get_tag_str();
 			printf("tag(%i): %s\n", status, mytag.c_str());
-			db.add_new(mytag);
+			this->tagdb.add_new(mytag);
 		}
-		reader.halt();
+		this->rfreader.halt();
 		usleep(300000);
 	}
 }
 
 void Controller::close() {
-	db.close();
+	this->tagdb.close();
 }
 
 std::string Controller::get_db_error() {
-	return db.get_error();
+	return this->tagdb.get_error();
 }
 

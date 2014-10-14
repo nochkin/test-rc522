@@ -22,6 +22,7 @@ class DB
 		int close();
 		std::string get_error();
 		int add_new(std::string tag);
+		void showDB();
 	private:
 		sqlite3 *mydb;
 		std::string my_filename;
