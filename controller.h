@@ -17,7 +17,7 @@ class Controller
 		void close();
 		std::string get_db_error();
 	private:
-		Reader rfreader;
+		// Reader rfreader;
 		DB tagdb;
 };
 
