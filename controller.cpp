@@ -18,7 +18,9 @@ void Controller::main_loop() {
 	{
 		status = reader.read_tag();
 		if (status == TAG_OK) {
-			printf("tag(%i): %s\n", status, reader.get_tag_str().c_str());
+			std::string mytag = reader.get_tag_str();
+			printf("tag(%i): %s\n", status, mytag.c_str());
+			db.add_new(mytag);
 		}
 		reader.halt();
 		usleep(300000);
