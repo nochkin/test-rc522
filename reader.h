@@ -89,7 +89,8 @@
 #define     TestDAC2Reg           0x3A
 #define     TestADCReg            0x3B
 
-#define MAX_RLEN 16
+#define MAX_RLEN 0x18
+#define TAG_LEN  16
 
 enum tag_status_t {
 	TAG_OK,
@@ -115,7 +116,7 @@ class Reader
 		std::string get_tag_str(std::string delim="-");
 	private:
 		interface_t _if_type;
-		uint8_t tag_full_sn[7];
+		uint8_t tag_full_sn[TAG_LEN];
 
 		int init();
 		interface_t get_interface();

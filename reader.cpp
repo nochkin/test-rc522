@@ -5,7 +5,7 @@
 Reader::Reader()
 {
 	_if_type = IF_NOT_SET;
-	memset(tag_full_sn, 0, 7);
+	memset(this->tag_full_sn, 0, 7);
 }
 
 int Reader::init_spi(int8_t RST)
@@ -38,7 +38,7 @@ int Reader::read_tag()
 	uint8_t tag_type[MAX_RLEN];
 	uint8_t sn[10];
 
-	memset(tag_full_sn, 0, 16);
+	memset(tag_full_sn, 0, TAG_LEN);
 
 	uint8_t status = request(PICC_REQIDL, tag_type);
 	memcpy(tag_full_sn, tag_type, 2);
