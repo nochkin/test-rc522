@@ -4,7 +4,7 @@
 
 Reader::Reader()
 {
-	memset(tag_full_sn, 7, 0);
+	memset(tag_full_sn, 0, 7);
 }
 
 int Reader::init_spi(int8_t RST)
@@ -64,7 +64,7 @@ uint8_t *Reader::get_tag()
 std::string Reader::get_tag_str(std::string delim)
 {
 	std::string tag_full_str = "";
-	char tmp_buf[2];
+	char tmp_buf[3];
 
 	for (int ii=0; ii<7; ii++) {
 		sprintf(tmp_buf, "%02X", tag_full_sn[ii]);
