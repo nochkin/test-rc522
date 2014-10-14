@@ -11,48 +11,53 @@ static int mydb_callback(void *NotUsed, int argc, char **argv, char **azColName)
 
 DB::DB()
 {
-	db_filename = "rc522.db";
+	db_filename = "/tmp/rc522.db";
+	this->mydb = NULL;
 }
 
 DB::DB(std::string db_filename)
 {
 	db_filename = db_filename;
+	this->mydb = NULL;
 }
 
 int DB::open()
 {
 	int rc;
 
-	rc = sqlite3_open(db_filename.c_str(), &db);
-	if (rc == 0) return rc;
+	rc = sqlite3_open_v2(db_filename.c_str(), &this->mydb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+	printf("mydb: %li\n", this->mydb);
+	if (rc == SQLITE_OK) {
+		return create();
+	}
 
-	return create();
+	return rc;
 }
 
 int DB::close()
 {
-	return sqlite3_close(db);
+	return sqlite3_close(this->mydb);
 }
 
 std::string DB::get_error()
 {
-	std::string err_msg(sqlite3_errmsg(db));
+	std::string err_msg(sqlite3_errmsg(this->mydb));
 	return err_msg;
 }
 
 int DB::create()
 {
-	std::string sql = DB_CREATE_TAGS;
 	char *err_msg = 0;
 	int rc;
 
-	rc = sqlite3_exec(db, sql.c_str(), mydb_callback, 0, &err_msg);
+	rc = sqlite3_exec(this->mydb, DB_CREATE_TAGS, mydb_callback, 0, &err_msg);
 
 	return rc;
 }
 
 int DB::add_new(std::string tag)
 {
+	printf("mydb: %li\n", this->mydb);
 	int rc;
 	static char const *args_s[] = {
 		tag.c_str(),
@@ -88,9 +93,10 @@ int DB::run_sql(std::string sql, unsigned long *args_i[], const char *args_s[], 
 {
 	int rc;
 	sqlite3_stmt *stmt;
-	const char *pz;
 
-	rc = sqlite3_prepare_v2(db, sql.c_str(), strlen(sql.c_str()), &stmt, &pz);
+	printf("mydb: %li\n", this->mydb);
+	rc = sqlite3_prepare_v2(this->mydb, sql.c_str(), strlen(sql.c_str()), &stmt, NULL);
+	printf("prepare: %s\n", get_error().c_str());
 	if (rc == SQLITE_OK) {
 		for (uint8_t ii=0; ii<args; ii++) {
 			if (args_i[ii] != NULL) {
@@ -100,7 +106,9 @@ int DB::run_sql(std::string sql, unsigned long *args_i[], const char *args_s[], 
 			}
 		}
 		sqlite3_step(stmt);
+		printf("step: %s\n", get_error().c_str());
 		sqlite3_finalize(stmt);
+		printf("finalize: %s\n", get_error().c_str());
 	}
 
 	return rc;

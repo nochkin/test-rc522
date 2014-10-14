@@ -8,9 +8,9 @@
 #include <string.h>
 #include <sys/time.h>
 
-#define DB_CREATE_TAGS	"create table rfid_tags(tag text primary key not null, timestamp int not null, playfile text default '')"
-#define DB_INSERT_TAG	"insert or ignore into rfid_tags (tag, timestamp) values (?,?)"
-#define DB_UPDATE_TIME	"update rfid_tags set timestamp=? where tag=?"
+#define DB_CREATE_TAGS	"create table if not exists rfid_tags(tag text primary key not null,mytime int not null,playfile text default '')"
+#define DB_INSERT_TAG	"insert into rfid_tags (tag,mytime) values (?,?)"
+#define DB_UPDATE_TIME	"update rfid_tags set mytime=? where tag=?"
 #define DB_UPDATE_FILE	"update rfid_tags set playfile=? where tag=?"
 
 class DB
@@ -23,8 +23,8 @@ class DB
 		std::string get_error();
 		int add_new(std::string tag);
 	private:
+		sqlite3 *mydb;
 		std::string db_filename;
-		sqlite3 *db;
 
 		int create();
 		int run_sql(std::string sql, unsigned long *args_i[], const char *args_s[], uint8_t args);
