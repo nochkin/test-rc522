@@ -7,7 +7,6 @@
 int main(int argc, char *argv[])
 {
 	int status = 0;
-	int uid = 0;
 	Controller controller;
 
 	std::string cfg_file = "rc522-mpc.cfg";
