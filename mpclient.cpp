@@ -33,6 +33,11 @@ int MPClient::connect()
 	return 0;
 }
 
+void MPClient::disconnect()
+{
+	mpd_connection_free(my_mpd_conn);
+}
+
 void MPClient::update_status()
 {
 	mpd_info_song->title = "";
@@ -74,9 +79,26 @@ void MPClient::update_status()
 	mpd_response_finish(my_mpd_conn);
 }
 
-void MPClient::add_and_play(std::string playfile)
+bool MPClient::add_and_play(std::string playfile)
 {
 	bool status;
+	uint8_t tries = 3;
+
+	while (tries > 0) {
+		status = do_add_and_play(playfile);
+		if (status) break;
+		disconnect();
+		connect();
+		tries -= 1;
+	}
+
+	return status;
+}
+
+bool MPClient::do_add_and_play(std::string playfile)
+{
+	bool status;
+
 	while (1) {
 		status = mpd_run_clear(my_mpd_conn);
 		if (mpd_connection_get_error(my_mpd_conn) != MPD_ERROR_SUCCESS) {
@@ -95,6 +117,8 @@ void MPClient::add_and_play(std::string playfile)
 		}
 		break;
 	}
+
+	return status;
 }
 
 void MPClient::print_status()

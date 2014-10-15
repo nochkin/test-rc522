@@ -40,6 +40,7 @@ class MPClient
 		MPClient(std::string host, uint16_t);
 		~MPClient();
 		int connect();
+		void disconnect();
 		void update_status();
 		void print_status();
 
@@ -54,7 +55,7 @@ class MPClient
 		std::string get_info_album();
 		std::string get_info_artist();
 		std::string get_info_song_tag(mpd_tag_type tag_type);
-		void add_and_play(std::string playfile);
+		bool add_and_play(std::string playfile);
 	private:
 		std::string mpd_host;
 		uint16_t mpd_port;
@@ -67,6 +68,7 @@ class MPClient
 		struct mpd_info_s *mpd_info;
 		struct mpd_info_song_s *mpd_info_song;
 
+		bool do_add_and_play(std::string playfile);
 		std::string get_song_tag_or_empty(mpd_tag_type tag_type);
 };
 
