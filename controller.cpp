@@ -20,10 +20,10 @@ void Controller::main_loop() {
 		// status = TAG_OK;
 		if (status == TAG_OK) {
 			std::string mytag = this->rfreader.get_tag_str();
-			printf("tag(%i): %s\n", status, mytag.c_str());
+			printf("tag: %s\n", mytag.c_str());
 			this->tagdb.add_new(mytag);
-			std::string playfile = this->tagdb.get_playfile(mytag);
-			printf("playfile: %s\n", playfile.c_str());
+			tag_t mytag_info = this->tagdb.get_taginfo(mytag);
+			printf("playfile: %s\n", mytag_info.playfile.c_str());
 		}
 		this->rfreader.halt();
 		usleep(200000);
