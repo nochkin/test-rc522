@@ -10,10 +10,10 @@ FIND = find
 
 OBJDIR = .obj
 
-SRC = bcm2835.c
-SRCXX = main.cpp db.cpp reader.cpp controller.cpp mpclient.cpp
-INC = bcm2835.h
-INCXX = db.h reader.h controller.h mpclient.h
+SRC = bcm2835.c ini.c
+SRCXX = main.cpp db.cpp reader.cpp controller.cpp mpclient.cpp INIReader.cpp
+INC = bcm2835.h ini.h
+INCXX = db.h reader.h controller.h mpclient.h INIReader.h
 OBJ = $(patsubst %,$(OBJDIR)/%,$(SRC:.c=.c.o))
 OBJXX = $(patsubst %,$(OBJDIR)/%,$(SRCXX:.cpp=.cpp.o))
 BINARY = rc522-mpc
