@@ -6,19 +6,22 @@
 
 #include "reader.h"
 #include "db.h"
+#include "mpclient.h"
 
 class Controller
 {
 	public:
 		Controller();
-		int setup_db();
 		int setup_reader();
+		int setup_db();
+		int setup_mpclient();
 		void main_loop();
 		void close();
 		std::string get_db_error();
 	private:
 		Reader rfreader;
 		DB tagdb;
+		MPClient mpclient;
 };
 
 #endif

@@ -11,6 +11,10 @@ int Controller::setup_reader() {
 	return this->rfreader.init_spi();
 }
 
+int Controller::setup_mpclient() {
+	return this->mpclient.connect();
+}
+
 void Controller::main_loop() {
 	uint8_t status;
 
@@ -23,7 +27,10 @@ void Controller::main_loop() {
 			printf("tag: %s\n", mytag.c_str());
 			this->tagdb.add_new(mytag);
 			tag_t mytag_info = this->tagdb.get_taginfo(mytag);
-			printf("playfile: %s\n", mytag_info.playfile.c_str());
+			if (!mytag_info.playfile.empty()) {
+				printf("playfile: %s\n", mytag_info.playfile.c_str());
+				this->mpclient.add_and_play(mytag_info.playfile);
+			}
 		}
 		this->rfreader.halt();
 		usleep(200000);

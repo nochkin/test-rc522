@@ -26,6 +26,13 @@ int main(int argc, char *argv[])
 		return 2;
 	}
 
+	status = controller.setup_mpclient();
+	if (status) {
+		fprintf(stderr, "MPClient: error connecting\n");
+		syslog(LOG_DAEMON|LOG_ERR, "MPClient: error connecting\n");
+		return 3;
+	}
+
 	controller.main_loop();
 
 	return 0;

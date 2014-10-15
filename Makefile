@@ -1,9 +1,9 @@
 CC = clang
 CXX = clang++
-CFLAGS_DEBUG = -O0 -g -Wall -I. -I/usr/local/include
-CFLAGS_OPT = -O3 -Wall -I. -I/usr/local/include # -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
+CFLAGS_DEBUG = -O0 -g -Wall -I/usr/local/include
+CFLAGS_OPT = -O3 -Wall -I/usr/local/include -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
 LINK = clang++
-LDFLAGS = -L/usr/local/lib -lsqlite3
+LDFLAGS = -L/usr/local/lib -lsqlite3 -lmpdclient
 MKDIR = mkdir
 RM = rm
 FIND = find
@@ -11,9 +11,9 @@ FIND = find
 OBJDIR = .obj
 
 SRC = bcm2835.c
-SRCXX = main.cpp db.cpp reader.cpp controller.cpp
+SRCXX = main.cpp db.cpp reader.cpp controller.cpp mpclient.cpp
 INC = bcm2835.h
-INCXX = db.h reader.h controller.h
+INCXX = db.h reader.h controller.h mpclient.h
 OBJ = $(patsubst %,$(OBJDIR)/%,$(SRC:.c=.c.o))
 OBJXX = $(patsubst %,$(OBJDIR)/%,$(SRCXX:.cpp=.cpp.o))
 BINARY = rc522-mpc
