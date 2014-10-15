@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <syslog.h>
 
-#include "INIReader.h"
+#include "config.h"
 #include "controller.h"
 
 int main(int argc, char *argv[])
@@ -11,9 +11,8 @@ int main(int argc, char *argv[])
 	Controller controller;
 
 	std::string cfg_file = "rc522-mpc.cfg";
-
-	INIReader ini(cfg_file);
-	if (ini.ParseError() < 0) {
+	status = Config::getInstance().load_config(cfg_file);
+	if (status) {
 		fprintf(stderr, "Failed to load %s\n", cfg_file.c_str());
 		syslog(LOG_DAEMON|LOG_ERR, "Failed to load config\n");
 		return 1;
