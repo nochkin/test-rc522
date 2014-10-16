@@ -5,8 +5,6 @@ struct config_t
 	std::string db_path;
 	std::string rc522_interface;
 	std::string rc522_i2c_address;
-	std::string ssd3306_interface;
-	std::string ssd3306_i2c_address;
 	int uid;
 };
 
@@ -19,7 +17,7 @@ class Config
 			return instance;
 		}
 		config_t config();
-		bool load_config(std::string);
+		int load_config(std::string);
 		void set_config(config_t);
 	private:
 		Config() {};
