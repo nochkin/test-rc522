@@ -7,8 +7,17 @@ int Controller::setup_db() {
 	return this->tagdb.open();
 }
 
-int Controller::setup_reader() {
-	return this->rfreader.init_spi();
+int Controller::setup_reader(interface_t interface) {
+	switch (interface) {
+		case IF_SPI:
+			return this->rfreader.init_spi();
+			break;
+		case IF_I2C:
+			return this->rfreader.init_i2c();
+			break;
+		default:
+			return -1;
+	}
 }
 
 int Controller::setup_mpclient() {
