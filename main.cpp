@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	status = Config::getInstance().load_config(cfg_file);
+	status = Config::get().load_config(cfg_file);
 	if (status) {
 		fprintf(stderr, "Failed to load %s\n", cfg_file.c_str());
 		syslog(LOG_DAEMON|LOG_ERR, "Failed to load config\n");
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	}
 
 	interface_t reader_if = IF_NOT_SET;
-	std::string reader_if_str = Config::getInstance().config().rc522_interface;
+	std::string reader_if_str = Config::get().config().rc522_interface;
 	if (reader_if_str == "spi") {
 		reader_if = IF_SPI;
 	} else if (reader_if_str == "i2c") {
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		return 102;
 	}
 
-	int uid = Config::getInstance().config().uid;
+	int uid = Config::get().config().uid;
 	if (uid > 0) {
 		setuid(uid);
 	}
