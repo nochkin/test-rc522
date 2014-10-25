@@ -16,7 +16,7 @@ INC = bcm2835.h ini.h
 INCXX = db.h reader.h controller.h mpclient.h INIReader.h config.h
 OBJ = $(patsubst %,$(OBJDIR)/%,$(SRC:.c=.c.o))
 OBJXX = $(patsubst %,$(OBJDIR)/%,$(SRCXX:.cpp=.cpp.o))
-BINARY = rc522-mpc
+BINARY = mpc-rfid
 
 ifeq ($(DEBUG),1)
 	CFLAGS := $(CFLAGS_DEBUG)

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	int status = 0;
 	Controller controller;
 	int c;
-	std::string cfg_file = "rc522-mpc.cfg";
+	std::string cfg_file = "mpc-rfid.cfg";
 
 	while ((c = getopt(argc, argv, "c:")) != EOF) {
 		switch (c) {
