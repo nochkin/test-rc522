@@ -5,6 +5,13 @@
 #include "config.h"
 #include "controller.h"
 
+int usage(char *exec_name)
+{
+	printf("Usage:\n");
+	printf("%s [-c mpc-rfid.cfg]\n", exec_name);
+	return 2;
+}
+
 int main(int argc, char *argv[])
 {
 	int status = 0;
@@ -12,10 +19,13 @@ int main(int argc, char *argv[])
 	int c;
 	std::string cfg_file = "mpc-rfid.cfg";
 
-	while ((c = getopt(argc, argv, "c:")) != EOF) {
+	while ((c = getopt(argc, argv, "c:h")) != EOF) {
 		switch (c) {
 			case 'c':
 				cfg_file = optarg;
+				break;
+			case 'h':
+				return usage(argv[0]);
 				break;
 			default:
 				return 1;
