@@ -1,5 +1,12 @@
 #include "db.h"
 
+static const std::string DB_CREATE_TAGS = "create table if not exists rfid_tags(tag text primary key not null,tagname text not null unique,mytime int not null,playfile text default '')";
+static const std::string DB_INSERT_TAG = "insert or ignore into rfid_tags (mytime,tag,tagname) values (?,?,?)";
+static const std::string DB_UPDATE_TIME = "update rfid_tags set mytime=? where tag=?";
+static const std::string DB_UPDATE_FILE = "update rfid_tags set playfile=? where tag=?";
+static const std::string DB_UPDATE_NAME = "update rfid_tags set tagname=? where tag=?";
+static const std::string DB_SELECT_TAG = "select tagname,mytime,playfile from rfid_tags where tag=?";
+
 using namespace mpc_rfid;
 
 DB::DB() : mydb(NULL)
