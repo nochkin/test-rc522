@@ -41,13 +41,16 @@ int main(int argc, char *argv[])
 	}
 
 	interface_t reader_if = IF_NOT_SET;
+	uint8_t param_if = 0;
 	std::string reader_if_str = Config::get().config().rc522_interface;
 	if (reader_if_str == "spi") {
 		reader_if = IF_SPI;
+		param_if = Config::get().config().rc522_spi_cs_int;
 	} else if (reader_if_str == "i2c") {
 		reader_if = IF_I2C;
+		param_if = Config::get().config().rc522_i2c_address;
 	}
-	status = controller.setup_reader(IF_SPI);
+	status = controller.setup_reader(reader_if, param_if);
 	if (status) {
 		fprintf(stderr, "Failed to init bcm2835\n");
 		syslog(LOG_DAEMON|LOG_ERR, "Failed to init bcm2835\n");

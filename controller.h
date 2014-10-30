@@ -12,7 +12,7 @@ class Controller
 {
 	public:
 		Controller();
-		int setup_reader(interface_t);
+		int setup_reader(interface_t, uint8_t parameter);
 		int setup_db();
 		int setup_mpclient();
 		void main_loop();

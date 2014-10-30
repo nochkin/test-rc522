@@ -108,14 +108,15 @@ class Reader
 {
 	public:
 		Reader();
-		int init_spi(int8_t RST = RC522_SPI_RESET);
-		int init_i2c();
+		int init_spi(uint8_t cs);
+		int init_i2c(uint8_t address);
 		int read_tag();
 		uint8_t halt();
 		uint8_t *get_tag();
 		std::string get_tag_str(std::string delim="-");
 	private:
 		interface_t _if_type;
+		uint8_t i2c_address;
 		uint8_t tag_full_sn[TAG_LEN];
 
 		int init();

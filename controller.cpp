@@ -7,13 +7,13 @@ int Controller::setup_db() {
 	return this->tagdb.open();
 }
 
-int Controller::setup_reader(interface_t interface) {
+int Controller::setup_reader(interface_t interface, uint8_t parameter) {
 	switch (interface) {
 		case IF_SPI:
-			return this->rfreader.init_spi();
+			return this->rfreader.init_spi(parameter);
 			break;
 		case IF_I2C:
-			return this->rfreader.init_i2c();
+			return this->rfreader.init_i2c(parameter);
 			break;
 		default:
 			return -1;

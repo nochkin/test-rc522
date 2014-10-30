@@ -8,7 +8,7 @@ Reader::Reader()
 	memset(this->tag_full_sn, 0, 7);
 }
 
-int Reader::init_spi(int8_t RST)
+int Reader::init_spi(uint8_t cs)
 {
 	if (bcm2835_init()) {
 		bcm2835_spi_begin();
@@ -18,8 +18,6 @@ int Reader::init_spi(int8_t RST)
 		bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
 		// 16 MHz SPI bus, but Worked at 62 MHz also
 		bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32);
-		// Setup reset pin direction as output
-		// bcm2835_gpio_fsel(RST, BCM2835_GPIO_FSEL_OUTP);
 		_if_type = IF_SPI;
 		return init();
 	} else {
@@ -27,9 +25,10 @@ int Reader::init_spi(int8_t RST)
 	}
 }
 
-int Reader::init_i2c()
+int Reader::init_i2c(uint8_t address)
 {
 	_if_type = IF_I2C;
+	i2c_address = address;
 	return 1;
 }
 
