@@ -5,6 +5,7 @@ MPClient::MPClient()
 	mpd_host = "";
 	mpd_port = 0;
 
+	my_mpd_conn = NULL;
 	mpd_info = new mpd_info_s;
 	mpd_info_song = new mpd_info_song_s;
 }
@@ -14,12 +15,14 @@ MPClient::MPClient(std::string host, uint16_t port)
 	mpd_host = host;
 	mpd_port = port;
 
+	my_mpd_conn = NULL;
 	mpd_info = new mpd_info_s;
 	mpd_info_song = new mpd_info_song_s;
 }
 
 MPClient::~MPClient()
 {
+	if (my_mpd_conn) mpd_connection_free(my_mpd_conn);
 	delete mpd_info_song;
 	delete mpd_info;
 }
@@ -33,9 +36,13 @@ int MPClient::connect()
 	return 0;
 }
 
-void MPClient::disconnect()
+int MPClient::disconnect()
 {
-	mpd_connection_free(my_mpd_conn);
+	if (my_mpd_conn) {
+	       mpd_connection_free(my_mpd_conn);
+	       return 0;
+	}
+	return 1;
 }
 
 void MPClient::update_status()
@@ -98,7 +105,6 @@ bool MPClient::add_and_play(std::string playfile)
 bool MPClient::do_add_and_play(std::string playfile)
 {
 	bool status;
-
 	while (1) {
 		status = mpd_run_clear(my_mpd_conn);
 		if (mpd_connection_get_error(my_mpd_conn) != MPD_ERROR_SUCCESS) {
