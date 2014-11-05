@@ -1,12 +1,13 @@
 CC = clang
 CXX = clang++
 CFLAGS_DEBUG = -O0 -g -Wall -I/usr/local/include
-CFLAGS_OPT = -O3 -Wall -I/usr/local/include -march=armv6zk -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
+CFLAGS_OPT = -O3 -Wall -I/usr/local/include -mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard # -march=armv6zk
 LINK = clang++
-LDFLAGS = -L/usr/local/lib -lsqlite3 -lmpdclient
+LDFLAGS = -L/usr/local/lib -lsqlite3 -lmpdclient -static-libstdc++
 MKDIR = mkdir
 RM = rm
 FIND = find
+STRIP = strip
 
 OBJDIR = .obj
 
@@ -21,6 +22,7 @@ BINARY = mpc-rfid
 ifeq ($(DEBUG),1)
 	CFLAGS := $(CFLAGS_DEBUG)
 	DEBUG_INFO = "\(Debug\)"
+	STRIP = ls -l
 else
 	CFLAGS := $(CFLAGS_OPT)
 	DEBUG_INFO = ""
@@ -46,6 +48,7 @@ $(OBJDIR)/%.cpp.o: %.cpp $(INCXX)
 
 $(BINARY): $(OBJ) $(OBJXX)
 	$(QLD)$(LINK) $(LDFLAGS) -o $(BINARY) $^
+	@$(STRIP) $(BINARY)
 
 clean:
 	$(FIND) $(OBJDIR) -type f -exec rm -f {} \;
