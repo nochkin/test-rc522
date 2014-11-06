@@ -2,9 +2,8 @@
 
 #include "reader.h"
 
-Reader::Reader()
+Reader::Reader() : _if_type(IF_NOT_SET)
 {
-	_if_type = IF_NOT_SET;
 	memset(this->tag_full_sn, 0, 7);
 }
 
@@ -12,8 +11,8 @@ int Reader::init_spi(uint8_t cs)
 {
 	if (bcm2835_init()) {
 		bcm2835_spi_begin();
-		bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
-		bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
+		bcm2835_spi_chipSelect(cs);
+		bcm2835_spi_setChipSelectPolarity(cs, LOW);
 		bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
 		bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
 		// 16 MHz SPI bus, but Worked at 62 MHz also
@@ -32,10 +31,9 @@ int Reader::init_i2c(uint8_t address)
 	return 1;
 }
 
-int Reader::read_tag()
+uint8_t Reader::read_tag()
 {
 	uint8_t tag_type[MAX_RLEN];
-	uint8_t sn[10];
 
 	memset(tag_full_sn, 0, TAG_LEN);
 
@@ -43,6 +41,7 @@ int Reader::read_tag()
 	memcpy(tag_full_sn, tag_type, 2);
 	write(BitFramingReg, 0x07);
 	if (status == TAG_OK) {
+		uint8_t sn[10];
 		status = anticoll(sn);
 		memcpy(tag_full_sn+2, sn, 5);
 		status = select_sn(sn);
@@ -61,12 +60,12 @@ uint8_t *Reader::get_tag()
 	return tag_full_sn;
 }
 
-std::string Reader::get_tag_str(std::string delim)
+std::string Reader::get_tag_str(const std::string &delim)const
 {
-	std::string tag_full_str = "";
+	std::string tag_full_str;
 	char tmp_buf[3];
 
-	for (int ii=0; ii<7; ii++) {
+	for (int ii=0; ii<7; ++ii) {
 		sprintf(tmp_buf, "%02X", tag_full_sn[ii]);
 		tag_full_str.append(tmp_buf);
 		tag_full_str.append(delim);
@@ -90,19 +89,18 @@ int Reader::init()
 	return 0;
 }
 
-interface_t Reader::get_interface() {
+interface_t Reader::get_interface()const {
 	return _if_type;
 }
 
 uint8_t Reader::request(uint8_t req_mode, uint8_t *tag_type)
 {
-	uint8_t status;
 	uint8_t buf[MAX_RLEN];
 	uint8_t buf_len = 0;
 
 	write(BitFramingReg, 0x07);
 	buf[0] = req_mode;
-	status = send_to_card(PCD_TRANSCEIVE, buf, 1, buf, &buf_len);
+	uint8_t status = send_to_card(PCD_TRANSCEIVE, buf, 1, buf, &buf_len);
 	if (buf_len > 1) {
 		tag_type[0] = buf[0];
 		tag_type[1] = buf[1];
@@ -113,18 +111,17 @@ uint8_t Reader::request(uint8_t req_mode, uint8_t *tag_type)
 
 uint8_t Reader::anticoll(uint8_t *sn)
 {
-	uint8_t status;
 	uint8_t sn_check = 0;
 	uint8_t sn_len = 0;
-	uint8_t ii;
 
 	write(BitFramingReg, 0x00);
 	sn[0] = PICC_ANTICOLL1;
 	sn[1] = 0x20;
-	status = send_to_card(PCD_TRANSCEIVE, sn, 2, sn, &sn_len);
+	uint8_t status = send_to_card(PCD_TRANSCEIVE, sn, 2, sn, &sn_len);
 
 	if (status == TAG_OK) {
-		for (ii=0; ii<4; ii++) {
+		uint8_t ii;
+		for (ii=0; ii<4; ++ii) {
 			sn_check ^= sn[ii];
 		}
 		if (sn_check != sn[ii]) {
@@ -137,7 +134,6 @@ uint8_t Reader::anticoll(uint8_t *sn)
 
 uint8_t Reader::select_sn(uint8_t *sn)
 {
-	uint8_t status;
 	uint8_t buf[MAX_RLEN];
 	uint8_t buf_len = 0;
 
@@ -150,12 +146,7 @@ uint8_t Reader::select_sn(uint8_t *sn)
 	calculate_crc(buf, 7, &buf[7]);
 	// clear_bitmask(Status2Reg, 0x08);
 
-	status = send_to_card(PCD_TRANSCEIVE, buf, 9, buf, &buf_len);
-	// printf("buf(%i): ", buf_len);
-	for (int ii=0; ii<buf_len; ii++) {
-		// printf("%02X:", buf[ii]);
-	}
-	// printf("\n");
+	uint8_t status = send_to_card(PCD_TRANSCEIVE, buf, 9, buf, &buf_len);
 	if (buf_len != 0x18) {
 		status = TAG_ERROR;
 	}
@@ -165,7 +156,6 @@ uint8_t Reader::select_sn(uint8_t *sn)
 
 uint8_t Reader::halt()
 {
-	uint8_t status;
 	uint8_t buf[4];
 	uint8_t buf_len = 0;
 
@@ -173,8 +163,7 @@ uint8_t Reader::halt()
 	buf[1] = 0;
 	calculate_crc(buf, 2, &buf[2]);
 
-	status = send_to_card(PCD_TRANSCEIVE, buf, 4, buf, &buf_len);
-	return status;
+	return send_to_card(PCD_TRANSCEIVE, buf, 4, buf, &buf_len);
 }
 
 void Reader::calculate_crc(uint8_t *data, uint8_t data_len, uint8_t *buf)
@@ -288,7 +277,7 @@ void Reader::antenna(bool on)
 	}
 }
 
-void Reader::write(uint8_t addr, uint8_t data)
+void Reader::write(uint8_t addr, uint8_t data)const
 {
 	char buf[2];
 	buf[0] = (addr << 1) & 0x7f;
@@ -305,7 +294,7 @@ void Reader::write(uint8_t addr, uint8_t data)
 	}
 }
 
-uint8_t Reader::read(uint8_t addr)
+uint8_t Reader::read(uint8_t addr)const
 {
 	char buf[2];
 	buf[0] = ((addr << 1) & 0x7e) | 0x80;
@@ -323,13 +312,13 @@ uint8_t Reader::read(uint8_t addr)
 	return (uint8_t)buf[1];
 }
 
-void Reader::set_bitmask(uint8_t addr, uint8_t mask)
+void Reader::set_bitmask(uint8_t addr, uint8_t mask)const
 {
 	uint8_t data = read(addr);
 	write(addr, data | mask);
 }
 
-void Reader::clear_bitmask(uint8_t addr, uint8_t mask)
+void Reader::clear_bitmask(uint8_t addr, uint8_t mask)const
 {
 	uint8_t data = read(addr);
 	write(addr, data & ~mask);

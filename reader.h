@@ -110,26 +110,26 @@ class Reader
 		Reader();
 		int init_spi(uint8_t cs);
 		int init_i2c(uint8_t address);
-		int read_tag();
+		uint8_t read_tag();
 		uint8_t halt();
 		uint8_t *get_tag();
-		std::string get_tag_str(std::string delim="-");
+		std::string get_tag_str(const std::string &delim="-")const;
 	private:
 		interface_t _if_type;
 		uint8_t i2c_address;
 		uint8_t tag_full_sn[TAG_LEN];
 
 		int init();
-		interface_t get_interface();
+		interface_t get_interface()const;
 		uint8_t request(uint8_t req_mode, uint8_t *tag_type);
 		uint8_t anticoll(uint8_t *);
 		uint8_t select_sn(uint8_t *sn);
 		void calculate_crc(uint8_t *data, uint8_t data_len, uint8_t *buf);
 		uint8_t send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, uint8_t *buf, uint8_t *buf_len);
 		void antenna(bool on);
-		void write(uint8_t addr, uint8_t data);
-		uint8_t read(uint8_t addr);
-		void set_bitmask(uint8_t addr, uint8_t mask);
-		void clear_bitmask(uint8_t addr, uint8_t mask);
+		void write(uint8_t addr, uint8_t data)const;
+		uint8_t read(uint8_t addr)const;
+		void set_bitmask(uint8_t addr, uint8_t mask)const;
+		void clear_bitmask(uint8_t addr, uint8_t mask)const;
 };
 
