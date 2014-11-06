@@ -33,19 +33,18 @@ int Reader::init_i2c(uint8_t address)
 
 uint8_t Reader::read_tag()
 {
-	uint8_t tag_type[MAX_RLEN];
+	uint8_t tag_type[MAX_READ_LEN];
 
 	memset(tag_full_sn, 0, TAG_LEN);
 
 	uint8_t status = request(PICC_REQIDL, tag_type);
-	memcpy(tag_full_sn, tag_type, 2);
+	memcpy(tag_full_sn, tag_type, TAG_TYPE_LEN);
 	write(BitFramingReg, 0x07);
 	if (status == TAG_OK) {
 		uint8_t sn[10];
 		status = anticoll(sn);
-		memcpy(tag_full_sn+2, sn, 5);
+		memcpy(tag_full_sn+TAG_TYPE_LEN, sn, TAG_LEN_SHORT-2);
 		status = select_sn(sn);
-		// memcpy(tag_full_sn+2+5, sn, 1);
 	}
 	// printf("full sn: ");
 	// for (int ii=0; ii<7; ii++) {
@@ -65,7 +64,7 @@ std::string Reader::get_tag_str(const std::string &delim)const
 	std::string tag_full_str;
 	char tmp_buf[3];
 
-	for (int ii=0; ii<7; ++ii) {
+	for (int ii=0; ii<TAG_LEN_SHORT; ++ii) {
 		sprintf(tmp_buf, "%02X", tag_full_sn[ii]);
 		tag_full_str.append(tmp_buf);
 		tag_full_str.append(delim);
@@ -95,7 +94,7 @@ interface_t Reader::get_interface()const {
 
 uint8_t Reader::request(uint8_t req_mode, uint8_t *tag_type)
 {
-	uint8_t buf[MAX_RLEN];
+	uint8_t buf[MAX_READ_LEN];
 	uint8_t buf_len = 0;
 
 	write(BitFramingReg, 0x07);
@@ -111,7 +110,6 @@ uint8_t Reader::request(uint8_t req_mode, uint8_t *tag_type)
 
 uint8_t Reader::anticoll(uint8_t *sn)
 {
-	uint8_t sn_check = 0;
 	uint8_t sn_len = 0;
 
 	write(BitFramingReg, 0x00);
@@ -120,7 +118,7 @@ uint8_t Reader::anticoll(uint8_t *sn)
 	uint8_t status = send_to_card(PCD_TRANSCEIVE, sn, 2, sn, &sn_len);
 
 	if (status == TAG_OK) {
-		uint8_t ii;
+		uint8_t ii, sn_check = 0;
 		for (ii=0; ii<4; ++ii) {
 			sn_check ^= sn[ii];
 		}
@@ -134,19 +132,19 @@ uint8_t Reader::anticoll(uint8_t *sn)
 
 uint8_t Reader::select_sn(uint8_t *sn)
 {
-	uint8_t buf[MAX_RLEN];
+	uint8_t buf[MAX_READ_LEN];
 	uint8_t buf_len = 0;
 
 	buf[0] = PICC_ANTICOLL1;
 	buf[1] = 0x70;
-	for (int ii=0; ii<5; ii++) {
-		buf[ii+2] = *(sn+ii);
+	for (int ii=0; ii<TAG_LEN_SHORT-TAG_CRC_LEN; ++ii) {
+		buf[ii+2] = *(sn++);
 	}
 
-	calculate_crc(buf, 7, &buf[7]);
+	calculate_crc(buf, TAG_LEN_SHORT, &buf[TAG_LEN_SHORT]);
 	// clear_bitmask(Status2Reg, 0x08);
 
-	uint8_t status = send_to_card(PCD_TRANSCEIVE, buf, 9, buf, &buf_len);
+	uint8_t status = send_to_card(PCD_TRANSCEIVE, buf, TAG_LEN_SHORT+2, buf, &buf_len);
 	if (buf_len != 0x18) {
 		status = TAG_ERROR;
 	}
@@ -163,7 +161,7 @@ uint8_t Reader::halt()
 	buf[1] = 0;
 	calculate_crc(buf, 2, &buf[2]);
 
-	return send_to_card(PCD_TRANSCEIVE, buf, 4, buf, &buf_len);
+	return send_to_card(PCD_TRANSCEIVE, buf, 2+TAG_CRC_LEN, buf, &buf_len);
 }
 
 void Reader::calculate_crc(uint8_t *data, uint8_t data_len, uint8_t *buf)
@@ -251,8 +249,8 @@ uint8_t Reader::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, u
 				if (n == 0) {
 					n = 1;
 				}
-				if (n > MAX_RLEN) {
-					n = MAX_RLEN;
+				if (n > MAX_READ_LEN) {
+					n = MAX_READ_LEN;
 				}
 				// Read FIFO data received
 				// printf("sn: ");

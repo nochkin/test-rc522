@@ -89,8 +89,11 @@
 #define     TestDAC2Reg           0x3A
 #define     TestADCReg            0x3B
 
-#define MAX_RLEN 0x18
-#define TAG_LEN  16
+#define MAX_READ_LEN 	0x18
+#define TAG_LEN  	16
+#define TAG_LEN_SHORT	7
+#define TAG_TYPE_LEN	2
+#define TAG_CRC_LEN	2
 
 enum tag_status_t {
 	TAG_OK,
