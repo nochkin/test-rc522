@@ -2,6 +2,8 @@
 
 #include "reader.h"
 
+using namespace mpc_rfid;
+
 Reader::Reader() : _if_type(IF_NOT_SET)
 {
 	memset(this->tag_full_sn, 0, 7);
@@ -75,7 +77,7 @@ std::string Reader::get_tag_str(const std::string &delim)const
 	char tmp_buf[3];
 
 	for (int ii=0; ii<TAG_LEN_SHORT; ++ii) {
-		sprintf(tmp_buf, "%02X", tag_full_sn[ii]);
+		snprintf(tmp_buf, 3, "%02X", tag_full_sn[ii]);
 		tag_full_str.append(tmp_buf);
 		tag_full_str.append(delim);
 	}

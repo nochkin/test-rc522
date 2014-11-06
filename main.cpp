@@ -14,11 +14,10 @@ int usage(char *exec_name)
 
 int main(int argc, char *argv[])
 {
-	int status = 0;
 	Controller controller;
-	int c;
 	std::string cfg_file = "mpc-rfid.cfg";
 
+	int c;
 	while ((c = getopt(argc, argv, "c:h")) != EOF) {
 		switch (c) {
 			case 'c':
@@ -33,8 +32,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	status = Config::get().load_config(cfg_file);
-	if (status) {
+	if (Config::get().load_config(cfg_file)) {
 		fprintf(stderr, "Failed to load %s\n", cfg_file.c_str());
 		syslog(LOG_DAEMON|LOG_ERR, "Failed to load config\n");
 		return 101;
@@ -50,8 +48,7 @@ int main(int argc, char *argv[])
 		reader_if = IF_I2C;
 		param_if = Config::get().config().rc522_i2c_address;
 	}
-	status = controller.setup_reader(reader_if, param_if);
-	if (status) {
+	if (controller.setup_reader(reader_if, param_if)) {
 		fprintf(stderr, "Failed to init bcm2835\n");
 		syslog(LOG_DAEMON|LOG_ERR, "Failed to init bcm2835\n");
 		return 102;
@@ -62,15 +59,13 @@ int main(int argc, char *argv[])
 		setuid(uid);
 	}
 
-	status = controller.setup_db();
-	if (status) {
+	if (controller.setup_db()) {
 		fprintf(stderr, "DB: filed to open: %s\n", controller.get_db_error().c_str());
 		syslog(LOG_DAEMON|LOG_ERR, "DB: filed to open\n");
 		return 103;
 	}
 
-	status = controller.setup_mpclient();
-	if (status) {
+	if (controller.setup_mpclient()) {
 		fprintf(stderr, "MPClient: error connecting\n");
 		syslog(LOG_DAEMON|LOG_ERR, "MPClient: error connecting\n");
 		return 104;

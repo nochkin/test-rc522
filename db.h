@@ -15,34 +15,35 @@
 #define DB_UPDATE_NAME	"update rfid_tags set tagname=? where tag=?"
 #define DB_SELECT_TAG	"select tagname,mytime,playfile from rfid_tags where tag=?"
 
-struct tag_t {
-	std::string tag;
-	std::string tagname;
-	unsigned long mytime;
-	std::string playfile;
-};
+namespace mpc_rfid {
+	struct tag_t {
+		std::string tag;
+		std::string tagname;
+		unsigned long mytime;
+		std::string playfile;
+	};
 
-class DB
-{
-	public:
-		DB();
-		DB(std::string db_filename);
-		int open();
-		int close();
-		std::string get_error();
-		int add_new(std::string tag);
-		int update_playfile(std::string tag, std::string playfile);
-		int update_tagname(std::string tag, std::string tagname);
-		tag_t get_taginfo(std::string tag);
-	private:
-		sqlite3 *mydb;
-		sqlite3_stmt *stmt;
-		std::string my_filename;
+	class DB
+	{
+		public:
+			DB(std::string db_filename="rc522.db");
+			int open();
+			int close();
+			std::string get_error();
+			int add_new(std::string tag);
+			int update_playfile(std::string tag, std::string playfile);
+			int update_tagname(std::string tag, std::string tagname);
+			tag_t get_taginfo(std::string tag);
+		private:
+			sqlite3 *mydb;
+			sqlite3_stmt *stmt;
+			std::string my_filename;
 
-		int create();
-		int update_text(std::string sql, std::string tag, std::string textfield);
-		int sql_update(std::string sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn);
-		int sql_run(std::string sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn);
-};
+			int create();
+			int update_text(std::string sql, std::string tag, std::string textfield);
+			int sql_update(std::string sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn);
+			int sql_run(std::string sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn);
+	};
+}
 
 #endif
