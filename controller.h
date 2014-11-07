@@ -16,7 +16,7 @@ namespace mpc_rfid {
 		public:
 			Controller();
 			int setup_reader(interface_t, uint8_t parameter);
-			int setup_db();
+			int setup_db(std::string db_filename);
 			int setup_mpclient();
 			void main_loop();
 			void close();
