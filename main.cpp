@@ -59,8 +59,9 @@ int main(int argc, char *argv[])
 		setuid(uid);
 	}
 
-	if (controller.setup_db()) {
-		fprintf(stderr, "DB: filed to open: %s\n", controller.get_db_error().c_str());
+	std::string db_filename = Config::get().config().db_path;
+	if (controller.setup_db(db_filename)) {
+		fprintf(stderr, "DB: filed to open %s: %s\n", db_filename.c_str(), controller.get_db_error().c_str());
 		syslog(LOG_DAEMON|LOG_ERR, "DB: filed to open\n");
 		return 103;
 	}

@@ -3,8 +3,8 @@
 Controller::Controller() {
 }
 
-int Controller::setup_db() {
-	return this->tagdb.open();
+int Controller::setup_db(std::string db_filename) {
+	return this->tagdb.open(db_filename);
 }
 
 int Controller::setup_reader(interface_t interface, uint8_t parameter) {

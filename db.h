@@ -26,8 +26,8 @@ namespace mpc_rfid {
 	class DB
 	{
 		public:
-			DB(std::string db_filename="rc522.db");
-			int open();
+			DB();
+			int open(const std::string &db_filename="rc522.db");
 			int close();
 			std::string get_error();
 			int add_new(std::string tag);

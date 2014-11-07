@@ -11,14 +11,14 @@ static int mydb_callback(void *NotUsed, int argc, char **argv, char **azColName)
 	return 0;
 }
 
-DB::DB(std::string db_filename)
+DB::DB()
 {
-	my_filename = db_filename;
 	mydb = NULL;
 }
 
-int DB::open()
+int DB::open(const std::string &db_filename)
 {
+	my_filename = db_filename;
 	int rc = sqlite3_open_v2(my_filename.c_str(), &mydb, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 	if (rc == SQLITE_OK) {
 		return create();
