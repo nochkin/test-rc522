@@ -1,5 +1,7 @@
 #include "controller.h"
 
+using namespace mpc_rfid;
+
 int Controller::setup_db(std::string db_filename) {
 	return this->tagdb.open(db_filename);
 }

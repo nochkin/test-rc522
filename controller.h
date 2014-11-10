@@ -8,8 +8,6 @@
 #include "db.h"
 #include "mpclient.h"
 
-using namespace mpc_rfid;
-
 namespace mpc_rfid {
 	class Controller
 	{

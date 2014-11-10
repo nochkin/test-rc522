@@ -5,6 +5,8 @@
 #include "config.h"
 #include "controller.h"
 
+using namespace mpc_rfid;
+
 int usage(char *exec_name)
 {
 	printf("Usage:\n");
