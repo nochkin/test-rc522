@@ -14,13 +14,12 @@ namespace mpc_rfid {
 	class Controller
 	{
 		public:
-			Controller();
 			int setup_reader(interface_t, uint8_t parameter);
 			int setup_db(std::string db_filename);
 			int setup_mpclient();
 			void main_loop();
 			void close();
-			std::string get_db_error();
+			std::string get_db_error()const;
 		private:
 			Reader rfreader;
 			DB tagdb;

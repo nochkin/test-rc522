@@ -1,8 +1,5 @@
 #include "controller.h"
 
-Controller::Controller() {
-}
-
 int Controller::setup_db(std::string db_filename) {
 	return this->tagdb.open(db_filename);
 }
@@ -50,7 +47,7 @@ void Controller::close() {
 	this->tagdb.close();
 }
 
-std::string Controller::get_db_error() {
+std::string Controller::get_db_error()const {
 	return this->tagdb.get_error();
 }
 

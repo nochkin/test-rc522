@@ -29,7 +29,7 @@ namespace mpc_rfid {
 			DB();
 			int open(const std::string &db_filename="rc522.db");
 			int close();
-			std::string get_error();
+			std::string get_error()const;
 			int add_new(std::string tag);
 			int update_playfile(std::string tag, std::string playfile);
 			int update_tagname(std::string tag, std::string tagname);

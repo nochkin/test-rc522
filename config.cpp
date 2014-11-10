@@ -4,7 +4,7 @@
 
 using namespace mpc_rfid;
 
-config_t Config::config()
+const config_t Config::config()const
 {
 	return config_data;
 }

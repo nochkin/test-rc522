@@ -128,12 +128,12 @@ namespace mpc_rfid {
 
 			int init();
 			interface_t get_interface()const;
-			uint8_t request(uint8_t req_mode, uint8_t *tag_type);
-			uint8_t anticoll(uint8_t *);
-			uint8_t select_sn(uint8_t *sn);
-			void calculate_crc(uint8_t *data, uint8_t data_len, uint8_t *buf);
-			uint8_t send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, uint8_t *buf, uint8_t *buf_len);
-			void antenna(bool on);
+			uint8_t request(uint8_t req_mode, uint8_t *tag_type)const;
+			uint8_t anticoll(uint8_t *)const;
+			uint8_t select_sn(uint8_t *sn)const;
+			void calculate_crc(uint8_t *data, uint8_t data_len, uint8_t *buf)const;
+			uint8_t send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, uint8_t *buf, uint8_t *buf_len)const;
+			void antenna(bool on)const;
 			void write(uint8_t addr, uint8_t data)const;
 			uint8_t read(uint8_t addr)const;
 			void set_bitmask(uint8_t addr, uint8_t mask)const;

@@ -104,7 +104,7 @@ interface_t Reader::get_interface()const {
 	return _if_type;
 }
 
-uint8_t Reader::request(uint8_t req_mode, uint8_t *tag_type)
+uint8_t Reader::request(uint8_t req_mode, uint8_t *tag_type)const
 {
 	uint8_t buf[MAX_READ_LEN];
 	uint8_t buf_len = 0;
@@ -120,7 +120,7 @@ uint8_t Reader::request(uint8_t req_mode, uint8_t *tag_type)
 	return status;
 }
 
-uint8_t Reader::anticoll(uint8_t *sn)
+uint8_t Reader::anticoll(uint8_t *sn)const
 {
 	uint8_t sn_len = 0;
 
@@ -142,7 +142,7 @@ uint8_t Reader::anticoll(uint8_t *sn)
 	return status;
 }
 
-uint8_t Reader::select_sn(uint8_t *sn)
+uint8_t Reader::select_sn(uint8_t *sn)const
 {
 	uint8_t buf[MAX_READ_LEN];
 	uint8_t buf_len = 0;
@@ -176,7 +176,7 @@ uint8_t Reader::halt()
 	return send_to_card(PCD_TRANSCEIVE, buf, 2+TAG_CRC_LEN, buf, &buf_len);
 }
 
-void Reader::calculate_crc(uint8_t *data, uint8_t data_len, uint8_t *buf)
+void Reader::calculate_crc(uint8_t *data, uint8_t data_len, uint8_t *buf)const
 {
 	uint8_t ii, n;
 
@@ -198,7 +198,7 @@ void Reader::calculate_crc(uint8_t *data, uint8_t data_len, uint8_t *buf)
 	buf[1] = read(CRCResultRegM);
 }
 
-uint8_t Reader::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, uint8_t *buf, uint8_t *buf_len)
+uint8_t Reader::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, uint8_t *buf, uint8_t *buf_len)const
 {
 	uint8_t irq_en = 0x00;
 	uint8_t wait_irq = 0x00;
@@ -278,7 +278,7 @@ uint8_t Reader::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, u
 	return status;
 }
 
-void Reader::antenna(bool on)
+void Reader::antenna(bool on)const
 {
 	if (on) {
 		set_bitmask(TxControlReg, 0x03);
@@ -298,6 +298,7 @@ void Reader::write(uint8_t addr, uint8_t data)const
 			bcm2835_spi_transfern(buf, 2);
 			break;
 		case IF_I2C:
+			bcm2835_i2c_write(buf, 2);
 			break;
 		default:
 			break;
@@ -315,6 +316,7 @@ uint8_t Reader::read(uint8_t addr)const
 			bcm2835_spi_transfern(buf, 2);
 			break;
 		case IF_I2C:
+			bcm2835_i2c_write(buf, 2);
 			break;
 		default:
 			break;

@@ -2,15 +2,6 @@
 
 using namespace mpc_rfid;
 
-static int mydb_callback(void *NotUsed, int argc, char **argv, char **azColName){
-	for(int i=0; i<argc; i++)
-	{
-		printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-	}
-	printf("\n");
-	return 0;
-}
-
 DB::DB()
 {
 	mydb = NULL;
@@ -32,7 +23,7 @@ int DB::close()
 	return sqlite3_close(mydb);
 }
 
-std::string DB::get_error()
+std::string DB::get_error()const
 {
 	return std::string(sqlite3_errmsg(mydb));
 }
@@ -40,7 +31,7 @@ std::string DB::get_error()
 int DB::create()
 {
 	char *err_msg = 0;
-	return sqlite3_exec(mydb, DB_CREATE_TAGS, mydb_callback, 0, &err_msg);
+	return sqlite3_exec(mydb, DB_CREATE_TAGS, NULL, NULL, &err_msg);
 }
 
 int DB::add_new(std::string tag)
@@ -85,9 +76,6 @@ int DB::update_tagname(std::string tag, std::string tagname)
 
 tag_t DB::get_taginfo(std::string tag)
 {
-	tag_t tag_info;
-	int rc;
-
 	static char const *args_s[] = {
 		tag.c_str()
 	};
@@ -98,7 +86,8 @@ tag_t DB::get_taginfo(std::string tag)
 		SQLITE_TEXT
 	};
 
-	rc = sql_run(DB_SELECT_TAG, args_i, args_s, args, 1);
+	tag_t tag_info;
+	int rc = sql_run(DB_SELECT_TAG, args_i, args_s, args, 1);
 	while (1) {
 		rc = sqlite3_step(stmt);
 		if (rc == SQLITE_DONE) break;
