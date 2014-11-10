@@ -95,6 +95,7 @@ int Reader::init()
 	write(TReloadRegH, 0);
 	write(TxASKReg, 0x40);			// Transmit modulation
 	write(ModeReg, 0x3d);			// Tx/Rx settings, CRC=0x6363
+	set_bitmask(RFCfgReg, 0x07 << 4);	// RxGain = 48 dB
 
 	antenna(true);
 	return 0;
