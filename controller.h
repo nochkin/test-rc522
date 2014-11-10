@@ -3,6 +3,7 @@
 
 #include <unistd.h>
 #include <string>
+#include <syslog.h>
 
 #include "reader.h"
 #include "db.h"
