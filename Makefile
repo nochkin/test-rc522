@@ -44,7 +44,7 @@ $(OBJDIR)/%.c.o: %.c $(INC)
 	$(Q)$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OBJDIR)/%.cpp.o: %.cpp $(INCXX)
-	$(QXX)$(CC) $(CFLAGS) -o $@ -c $<
+	$(QXX)$(CXX) $(CFLAGS) -o $@ -c $<
 
 $(BINARY): $(OBJ) $(OBJXX)
 	$(QLD)$(LINK) $(LDFLAGS) -o $(BINARY) $^
