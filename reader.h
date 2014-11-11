@@ -118,7 +118,7 @@ namespace mpc_rfid {
 			int init_spi(uint8_t cs);
 			int init_i2c(uint8_t address);
 			uint8_t read_tag();
-			uint8_t halt();
+			uint8_t halt()const;
 			uint8_t *get_tag();
 			std::string get_tag_str(const std::string &delim="-")const;
 		private:

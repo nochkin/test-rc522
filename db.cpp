@@ -2,9 +2,9 @@
 
 using namespace mpc_rfid;
 
-DB::DB()
+DB::~DB()
 {
-	mydb = NULL;
+	close();
 }
 
 int DB::open(const std::string &db_filename)

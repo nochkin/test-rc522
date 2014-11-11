@@ -17,7 +17,6 @@ namespace mpc_rfid {
 			int setup_db(std::string db_filename);
 			int setup_mpclient();
 			void main_loop();
-			void close();
 			std::string get_db_error()const;
 		private:
 			Reader rfreader;

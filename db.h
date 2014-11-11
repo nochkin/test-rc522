@@ -26,9 +26,8 @@ namespace mpc_rfid {
 	class DB
 	{
 		public:
-			DB();
+			~DB();
 			int open(const std::string &db_filename="rc522.db");
-			int close();
 			std::string get_error()const;
 			int add_new(std::string tag);
 			int update_playfile(std::string tag, std::string playfile);
@@ -39,6 +38,7 @@ namespace mpc_rfid {
 			sqlite3_stmt *stmt;
 			std::string my_filename;
 
+			int close();
 			int create();
 			int update_text(std::string sql, std::string tag, std::string textfield);
 			int sql_update(std::string sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn);

@@ -165,7 +165,7 @@ uint8_t Reader::select_sn(uint8_t *sn)const
 	return status;
 }
 
-uint8_t Reader::halt()
+uint8_t Reader::halt()const
 {
 	uint8_t buf[4];
 	uint8_t buf_len = 0;
@@ -203,9 +203,6 @@ uint8_t Reader::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, u
 {
 	uint8_t irq_en = 0x00;
 	uint8_t wait_irq = 0x00;
-	uint8_t status = TAG_ERROR;
-	uint8_t last_bits, n, ii = 0;
-
 	switch (command) {
 		case PCD_AUTHENT:
 			irq_en = 0x12;
@@ -224,7 +221,7 @@ uint8_t Reader::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, u
 	write(CommandReg, PCD_IDLE);
 
 	// Write to FIFO
-	// printf("%i bytes to fifo\n", data_len);
+	uint8_t ii;
 	for (ii = 0; ii < data_len; ii++) {
 		write(FIFODataReg, data[ii]);
 	}
@@ -236,6 +233,7 @@ uint8_t Reader::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, u
 	}
 
 	// Waiting for received data to complete
+	uint8_t n;
 	ii = 150;
 	do {
 		usleep(200);
@@ -245,6 +243,7 @@ uint8_t Reader::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, u
 
 	clear_bitmask(BitFramingReg, 0x80);
 
+	uint8_t status = TAG_ERROR;
 	if (ii > 0) {
 		if (!(read(ErrorReg) & 0x1b)) {
 			status = TAG_OK;
@@ -253,7 +252,7 @@ uint8_t Reader::send_to_card(uint8_t command, uint8_t *data, uint8_t data_len, u
 			}
 			if (command == PCD_TRANSCEIVE) {
 				n = read(FIFOLevelReg);
-				last_bits = read(ControlReg) & 0x07;
+				uint8_t last_bits = read(ControlReg) & 0x07;
 				if (last_bits) {
 					*buf_len = (n-1)*8 + last_bits;
 				} else {

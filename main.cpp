@@ -27,16 +27,14 @@ int main(int argc, char *argv[])
 				break;
 			case 'h':
 				return usage(argv[0]);
-				break;
 			default:
 				return 1;
-				break;
 		}
 	}
 
 	if (Config::get().load_config(cfg_file)) {
 		fprintf(stderr, "Failed to load %s\n", cfg_file.c_str());
-		syslog(LOG_DAEMON|LOG_ERR, "Failed to load config\n");
+		syslog(LOG_DAEMON|LOG_ERR, "Failed to load %s\n", cfg_file.c_str());
 		return 101;
 	}
 
@@ -64,7 +62,7 @@ int main(int argc, char *argv[])
 	std::string db_filename = Config::get().config().db_path;
 	if (controller.setup_db(db_filename)) {
 		fprintf(stderr, "DB: failed to open %s: %s\n", db_filename.c_str(), controller.get_db_error().c_str());
-		syslog(LOG_DAEMON|LOG_ERR, "DB: failed to open\n");
+		syslog(LOG_DAEMON|LOG_ERR, "DB: failed to open %s: %s\n", db_filename.c_str(), controller.get_db_error().c_str());
 		return 103;
 	}
 
