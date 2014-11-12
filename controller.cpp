@@ -2,7 +2,7 @@
 
 using namespace mpc_rfid;
 
-int Controller::setup_db(std::string db_filename) {
+int Controller::setup_db(const std::string &db_filename) {
 	return tagdb.open(db_filename);
 }
 

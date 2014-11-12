@@ -9,7 +9,7 @@ const config_t Config::config()const
 	return config_data;
 }
 
-int Config::load_config(std::string cfg_file)
+int Config::load_config(const std::string &cfg_file)
 {
 	INIReader ini(cfg_file);
 	if (ini.ParseError() < 0) {
@@ -31,11 +31,6 @@ int Config::load_config(std::string cfg_file)
 	}
 
 	return 0;
-}
-
-void Config::set_config(config_t config)
-{
-	config_data = config;
 }
 
 void Config::tolower(std::string *input)

@@ -1,3 +1,15 @@
+#include <cstdio>
+
+#include <mpd/connection.h>
+#include <mpd/status.h>
+#include <mpd/list.h>
+#include <mpd/player.h>
+#include <mpd/queue.h>
+#include <mpd/response.h>
+#include <mpd/song.h>
+#include <mpd/audio_format.h>
+#include <mpd/idle.h>
+
 #include "mpclient.h"
 
 using namespace mpc_rfid;
@@ -21,11 +33,13 @@ MPClient::~MPClient()
 
 int MPClient::connect()
 {
-	my_mpd_conn = mpd_connection_new(mpd_host.empty() ? 0 : mpd_host.c_str(), mpd_port, 30000);
-	if (mpd_connection_get_error(my_mpd_conn) != MPD_ERROR_SUCCESS) {
-		return 1;
+	if (mpd_host.empty()) {
+		my_mpd_conn = mpd_connection_new(0, mpd_port, 30000);
+	} else {
+		my_mpd_conn = mpd_connection_new(mpd_host.c_str(), mpd_port, 30000);
 	}
-	return 0;
+
+	return int(mpd_connection_get_error(my_mpd_conn) != MPD_ERROR_SUCCESS);
 }
 
 int MPClient::disconnect()

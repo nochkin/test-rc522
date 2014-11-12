@@ -1,21 +1,13 @@
 #ifndef _MPCLIENT_H
 #define _MPCLIENT_H
 
-#include <string>
 #include <unistd.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <string>
 
-#include <mpd/connection.h>
-#include <mpd/status.h>
-#include <mpd/list.h>
-#include <mpd/player.h>
-#include <mpd/queue.h>
-#include <mpd/response.h>
-#include <mpd/song.h>
-#include <mpd/audio_format.h>
-#include <mpd/idle.h>
 #include <mpd/tag.h>
+
+struct mpd_connection;
 
 namespace mpc_rfid {
 	struct mpd_info_s {

@@ -25,8 +25,7 @@ namespace mpc_rfid {
 				return instance;
 			}
 			const config_t config()const;
-			int load_config(std::string);
-			void set_config(config_t);
+			int load_config(const std::string&);
 		private:
 			Config() {};
 			Config(Config const&);

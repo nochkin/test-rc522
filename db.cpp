@@ -31,10 +31,10 @@ std::string DB::get_error()const
 int DB::create()
 {
 	char *err_msg = 0;
-	return sqlite3_exec(mydb, DB_CREATE_TAGS, NULL, NULL, &err_msg);
+	return sqlite3_exec(mydb, DB_CREATE_TAGS.c_str(), NULL, NULL, &err_msg);
 }
 
-int DB::add_new(std::string tag)
+int DB::add_new(std::string &tag)
 {
 	static char const *args_s[] = {
 		"",
@@ -64,17 +64,17 @@ int DB::add_new(std::string tag)
 	return rc;
 }
 
-int DB::update_playfile(std::string tag, std::string playfile)
+int DB::update_playfile(std::string &tag, std::string &playfile)
 {
 	return update_text(DB_UPDATE_FILE, tag, playfile);
 }
 
-int DB::update_tagname(std::string tag, std::string tagname)
+int DB::update_tagname(std::string &tag, std::string &tagname)
 {
 	return update_text(DB_UPDATE_NAME, tag, tagname);
 }
 
-tag_t DB::get_taginfo(std::string tag)
+tag_t DB::get_taginfo(std::string &tag)
 {
 	static char const *args_s[] = {
 		tag.c_str()
@@ -105,7 +105,7 @@ tag_t DB::get_taginfo(std::string tag)
 	return tag_info;
 }
 
-int DB::update_text(std::string sql, std::string tag, std::string textfield)
+int DB::update_text(const std::string &sql, std::string &tag, std::string &textfield)
 {
 	static char const *args_s[] = {
 		textfield.c_str(),
@@ -127,7 +127,7 @@ int DB::update_text(std::string sql, std::string tag, std::string textfield)
 	return rc;
 }
 
-int DB::sql_update(std::string sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn)
+int DB::sql_update(const std::string &sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn)
 {
 	int rc = sql_run(sql, args_i, args_s, args, argn);
 	if (rc == SQLITE_OK) {
@@ -140,7 +140,7 @@ int DB::sql_update(std::string sql, unsigned long args_i[], const char *args_s[]
 	return rc;
 }
 
-int DB::sql_run(std::string sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn)
+int DB::sql_run(const std::string &sql, unsigned long args_i[], const char *args_s[], uint8_t args[], uint8_t argn)
 {
 	int rc = sqlite3_prepare_v2(mydb, sql.c_str(), strlen(sql.c_str()), &stmt, NULL);
 	if (rc == SQLITE_OK) {
