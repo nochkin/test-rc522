@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
-#include "bcm2835.h"
+#include <stdint.h>
 
 #include "INIReader.h"
 

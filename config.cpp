@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include "bcm2835.h"
+
 #include "config.h"
 
 using namespace mpc_rfid;
@@ -23,7 +25,7 @@ int Config::load_config(const std::string &cfg_file)
 	config_data.rc522_i2c_address = strtoul(ini.Get("", "rc522_i2c_address", "").c_str(), NULL, 0);
 	config_data.rc522_rx_gain = ini.GetInteger("", "rc522_rx_gain", 3);
 
-	tolower(&config_data.rc522_spi_cs);
+	this->tolower(&config_data.rc522_spi_cs);
 
 	config_data.rc522_spi_cs_int = BCM2835_SPI_CS0;
 	if (config_data.rc522_spi_cs == "cs0") {
