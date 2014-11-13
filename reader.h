@@ -115,8 +115,8 @@ namespace mpc_rfid {
 	{
 		public:
 			Reader();
-			int init_spi(uint8_t cs);
-			int init_i2c(uint8_t address);
+			int init_spi(uint8_t cs, uint8_t rx_gain);
+			int init_i2c(uint8_t address, uint8_t rx_gain);
 			uint8_t read_tag();
 			uint8_t halt()const;
 			uint8_t *get_tag();
@@ -126,7 +126,7 @@ namespace mpc_rfid {
 			uint8_t i2c_address;
 			uint8_t tag_full_sn[TAG_LEN];
 
-			int init();
+			int init(uint8_t rx_gain);
 			interface_t get_interface()const;
 			uint8_t request(uint8_t req_mode, uint8_t *tag_type)const;
 			uint8_t anticoll(uint8_t *)const;

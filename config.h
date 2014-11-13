@@ -13,6 +13,7 @@ namespace mpc_rfid {
 		std::string rc522_spi_cs;
 		uint8_t rc522_spi_cs_int;
 		uint8_t rc522_i2c_address;
+		uint8_t rc522_rx_gain;
 		int uid;
 	};
 

@@ -9,7 +9,7 @@ Reader::Reader() : _if_type(IF_NOT_SET)
 	memset(this->tag_full_sn, 0, 7);
 }
 
-int Reader::init_spi(uint8_t cs)
+int Reader::init_spi(uint8_t cs, uint8_t rx_gain)
 {
 	if (bcm2835_init()) {
 		bcm2835_spi_begin();
@@ -21,12 +21,12 @@ int Reader::init_spi(uint8_t cs)
 		bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32);
 
 		_if_type = IF_SPI;
-		return init();
+		return init(rx_gain);
 	}
 	return 1;
 }
 
-int Reader::init_i2c(uint8_t address)
+int Reader::init_i2c(uint8_t address, uint8_t rx_gain)
 {
 	if (bcm2835_init()) {
 		bcm2835_i2c_begin();
@@ -38,7 +38,7 @@ int Reader::init_i2c(uint8_t address)
 		// bcm2835_gpio_fsel(rst, BCM2835_GPIO_FSEL_OUTP);
 
 		_if_type = IF_I2C;
-		return init();
+		return init(rx_gain);
 	}
 	return 1;
 }
@@ -85,7 +85,7 @@ std::string Reader::get_tag_str(const std::string &delim)const
 	return tag_full_str;
 }
 
-int Reader::init()
+int Reader::init(uint8_t rx_gain)
 {
 	write(CommandReg, PCD_RESETPHASE);	// Soft reset
 	usleep(10000);
@@ -95,7 +95,8 @@ int Reader::init()
 	write(TReloadRegH, 0);
 	write(TxASKReg, 0x40);			// Transmit modulation
 	write(ModeReg, 0x3d);			// Tx/Rx settings, CRC=0x6363
-	set_bitmask(RFCfgReg, 0x07 << 4);	// RxGain = 48 dB
+	clear_bitmask(RFCfgReg, 0x07 << 4);
+	set_bitmask(RFCfgReg, (rx_gain & 0x07) << 4);	// RxGain
 
 	antenna(true);
 	return 0;

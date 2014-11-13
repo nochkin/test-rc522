@@ -6,13 +6,13 @@ int Controller::setup_db(const std::string &db_filename) {
 	return tagdb.open(db_filename);
 }
 
-int Controller::setup_reader(interface_t interface, uint8_t parameter) {
+int Controller::setup_reader(interface_t interface, uint8_t if_parameter, uint8_t rx_gain) {
 	switch (interface) {
 		case IF_SPI:
-			return rfreader.init_spi(parameter);
+			return rfreader.init_spi(if_parameter, rx_gain);
 			break;
 		case IF_I2C:
-			return rfreader.init_i2c(parameter);
+			return rfreader.init_i2c(if_parameter, rx_gain);
 			break;
 		default:
 			return -1;

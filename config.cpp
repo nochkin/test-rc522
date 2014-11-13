@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cstdlib>
 
 #include "config.h"
 
@@ -19,7 +20,8 @@ int Config::load_config(const std::string &cfg_file)
 	config_data.db_path = ini.Get("", "db_path", "/var/www/db/config.db");
 	config_data.rc522_interface = ini.Get("", "rc522_interface", "");
 	config_data.rc522_spi_cs = ini.Get("", "rc522_spi_cs", "cs0");
-	// config_data.rc522_i2c_address = ini.Get("", "rc522_i2c_address", "");
+	config_data.rc522_i2c_address = strtoul(ini.Get("", "rc522_i2c_address", "").c_str(), NULL, 0);
+	config_data.rc522_rx_gain = ini.GetInteger("", "rc522_rx_gain", 3);
 
 	tolower(&config_data.rc522_spi_cs);
 
