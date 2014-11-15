@@ -25,20 +25,22 @@ int Config::load_config(const std::string &cfg_file)
 	config_data.rc522_i2c_address = strtoul(ini.Get("", "rc522_i2c_address", "").c_str(), NULL, 0);
 	config_data.rc522_rx_gain = ini.GetInteger("", "rc522_rx_gain", 3);
 
-	this->tolower(&config_data.rc522_spi_cs);
+	this->tolower(config_data.rc522_spi_cs);
 
 	config_data.rc522_spi_cs_int = BCM2835_SPI_CS0;
 	if (config_data.rc522_spi_cs == "cs0") {
 		config_data.rc522_spi_cs_int = BCM2835_SPI_CS0;
 	} else if (config_data.rc522_spi_cs == "cs1") {
 		config_data.rc522_spi_cs_int = BCM2835_SPI_CS1;
+	} else {
+		return 1;
 	}
 
 	return 0;
 }
 
-void Config::tolower(std::string *input)
+void Config::tolower(std::string &input)
 {
-	std::transform(input->begin(), input->end(), input->begin(), ::tolower);
+	std::transform(input.begin(), input.end(), input.begin(), ::tolower);
 }
 
