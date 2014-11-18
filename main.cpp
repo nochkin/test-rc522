@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	fprintf(stderr, "mpc-rfid: loading %s config\n", cfg_file.c_str());
+	fprintf(stderr, "Loading %s config\n", cfg_file.c_str());
 	syslog(LOG_DAEMON|LOG_INFO, "mpc-rfid: loading %s config\n", cfg_file.c_str());
 	if (Config::get().load_config(cfg_file)) {
 		fprintf(stderr, "Failed to load %s\n", cfg_file.c_str());
@@ -51,11 +51,11 @@ int main(int argc, char *argv[])
 		reader_if = IF_I2C;
 		param_if = Config::get().config().rc522_i2c_address;
 	}
-	fprintf(stderr, "mpc-rfid: initing bcm2835\n");
+	fprintf(stderr, "Initing bcm2835 and rfid\n");
 	syslog(LOG_DAEMON|LOG_INFO, "mpc-rfid: initing bcm2835\n");
 	if (controller.setup_reader(reader_if, param_if, reader_rx_gain)) {
-		fprintf(stderr, "Failed to init bcm2835\n");
-		syslog(LOG_DAEMON|LOG_ERR, "Failed to init bcm2835\n");
+		fprintf(stderr, "Failed to init bcm2835 and rfid\n");
+		syslog(LOG_DAEMON|LOG_ERR, "Failed to init bcm2835 and rfid\n");
 		return 102;
 	}
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 		setuid(uid);
 	}
 
-	fprintf(stderr, "mpc-rfid: opening DB\n");
+	fprintf(stderr, "Opening DB\n");
 	syslog(LOG_DAEMON|LOG_INFO, "mpc-rfid: opening DB\n");
 	std::string db_filename = Config::get().config().db_path;
 	if (controller.setup_db(db_filename)) {
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 		return 103;
 	}
 
-	fprintf(stderr, "mpc-rfid: connecting to MPD\n");
+	fprintf(stderr, "Connecting to MPD\n");
 	syslog(LOG_DAEMON|LOG_INFO, "mpc-rfid: connecting to MPD\n");
 	if (controller.setup_mpclient()) {
 		fprintf(stderr, "MPClient: error connecting\n");
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 		return 104;
 	}
 
-	fprintf(stderr, "mpc-rfid: serving requests\n");
+	fprintf(stderr, "Serving requests\n");
 	syslog(LOG_DAEMON|LOG_INFO, "mpc-rfid: serving requests\n");
 	controller.main_loop();
 
